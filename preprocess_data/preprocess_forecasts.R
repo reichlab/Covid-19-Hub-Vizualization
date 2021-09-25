@@ -32,7 +32,7 @@ available_as_ofs <- purrr::map(
             first_as_of <- as.Date("2020-08-01")
             data_start_date <- as.Date("2020-03-01")
         } else {
-            first_as_of <- as.Date("2020-12-05")        
+            first_as_of <- as.Date("2020-12-05")
             data_start_date <- as.Date("2020-10-01")
         }
         as_ofs <- seq.Date(from = first_as_of, to = last_as_of, by = 7)
@@ -55,16 +55,16 @@ models <- covidHubUtils::get_model_designations(
 
 for (target_var in c("case", "death", "hosp")) {
     if (target_var == "case") {
-        max_horizon = 2
-        targets <- paste0(1:2, " wk ahead inc case")
-    } else if(target_var == "death") {
-        max_horizon = 4
+        max_horizon <- 4
+        targets <- paste0(1:4, " wk ahead inc case")
+    } else if (target_var == "death") {
+        max_horizon <- 4
         targets <- paste0(1:4, " wk ahead inc death")
     } else {
-        max_horizon = 28
+        max_horizon <- 28
         targets <- paste0(1:34, " day ahead inc hosp")
     }
-    
+
     as_ofs <- available_as_ofs[[target_var]]
     for (as_of in as.character(as_ofs)) {
         all_forecasts <- covidEnsembles::load_covid_forecasts_relative_horizon(
@@ -81,11 +81,11 @@ for (target_var in c("case", "death", "hosp")) {
             max_horizon = max_horizon,
             required_quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
         )
-        
+
         for (location in unique(all_forecasts$location)) {
             location_forecasts <- all_forecasts %>%
                 dplyr::filter(location == UQ(location))
-            
+
             location_models <- unique(location_forecasts$model)
             location_forecasts_by_model <- purrr::map(
                 location_models,
@@ -101,12 +101,12 @@ for (target_var in c("case", "death", "hosp")) {
                             names_prefix = "q",
                             values_from = "value"
                         )
-                    
+
                     required_qs <- paste0("q", c("0.025", "0.25", "0.5", "0.75", "0.975"))
                     if (!all(required_qs %in% colnames(location_model_forecasts))) {
                         return(NULL)
                     }
-                    
+
                     rows_without_missing <- apply(
                         location_model_forecasts,
                         1,
@@ -118,7 +118,7 @@ for (target_var in c("case", "death", "hosp")) {
                     if (nrow(location_model_forecasts) == 0)  {
                         return(NULL)
                     }
-                    
+
                     return(as.list(location_model_forecasts))
                 }
             )
