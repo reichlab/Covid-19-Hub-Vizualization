@@ -30,7 +30,6 @@ export const state = () => ({
 export const mutations = {
     set_target_var (state, new_target_var) {
         state.target_var = new_target_var
-        state.current_models = ['COVIDhub-ensemble']
         this.dispatch('fetch_current_truth')
         this.dispatch('fetch_as_of_truth')
         this.dispatch('fetch_forecasts')
@@ -39,7 +38,6 @@ export const mutations = {
     },
     set_location (state, new_location) {
         state.location = new_location
-        state.current_models = ['COVIDhub-ensemble']
         this.dispatch('fetch_current_truth')
         this.dispatch('fetch_as_of_truth')
         this.dispatch('fetch_forecasts')
@@ -51,7 +49,6 @@ export const mutations = {
     },
     increment_as_of (state) {
         let as_of_index = state.available_as_ofs[state.target_var].indexOf(state.as_of_date)
-        state.current_models = state.current_models.length >0? state.current_models: ['COVIDhub-ensemble']
         if (as_of_index < state.available_as_ofs[state.target_var].length - 1) {
             state.as_of_date = state.available_as_ofs[state.target_var][as_of_index + 1]
         }
@@ -61,7 +58,6 @@ export const mutations = {
     },
     decrement_as_of (state) {
         let as_of_index = state.available_as_ofs[state.target_var].indexOf(state.as_of_date)
-        state.current_models = state.current_models.length >0? state.current_models: ['COVIDhub-ensemble']
         if (as_of_index > 0) {
             state.as_of_date = state.available_as_ofs[state.target_var][as_of_index - 1]
         }
@@ -82,12 +78,11 @@ export const mutations = {
     remove_from_current_model (state, item) {
         let index = state.current_models.indexOf(item)
         state.current_models.splice(index,1)
-        console.log(state.current_models)
+    
     },
     add_to_current_model(state, val){
         
         state.current_models.push(val)
-        console.log(state.current_models)
     },
     add_to_data(state, val){
         state.data.push(val)
@@ -158,8 +153,8 @@ export const getters = {
         return state.forecasts
     },
     plot_layout:state => {
-        let variable  = state.target_var==='case'? 'Cases': state.target_var =='hosp'? 'Hospitalisations':'Deaths'
-        let variable2 = state.target_var==='case'? 'Incident weekly Cases': state.target_var =='hosp'? 'Incident daily hospitalizations':'Incident weekly Deaths'
+        let variable  = state.target_var==='case'? 'weekly COVID-19 cases': state.target_var =='hosp'? 'daily COVID-19 hospitalizations':'weekly COVID-19 deaths'
+        let variable2 = state.target_var==='case'? 'Incident weekly cases': state.target_var =='hosp'? 'Incident daily hospitalizations':'Incident weekly deaths'
         let result = locations.filter(obj => {
             return obj.value === state.location
           })
@@ -179,7 +174,7 @@ export const getters = {
     plot_data: (state, getters) => {
         var pd = Object.keys(state.forecasts).map(
             (model) => {
-                console.log(state.current_models)
+        
                 if (state.current_models.includes(model))
                 {
                 let index = state.models.indexOf(model)
@@ -277,7 +272,7 @@ export const getters = {
             mode: "lines",
             name: "Current Truth",
             marker: {
-                color: "lightgray"
+                color: "darkgray"
             }
         })
     }

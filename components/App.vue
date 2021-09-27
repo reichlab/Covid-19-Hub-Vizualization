@@ -39,11 +39,13 @@
           <input type="checkbox" :id="item" :value="item" checked @click="handle_data(item,index)">&nbsp; {{item}}&nbsp;<span class="dot" style="background-color: black;"></span>
         </div>
       </div>
+      
       <label for = "model">Select Models:</label>
       <div style=" height: 150px; overflow-y: scroll;">
         <div class="form-group form-check" v-for="(item, index) in models" v-bind:key="index" >
           <div v-if="forecasts.hasOwnProperty(item)">
-            <div v-if="item==='COVIDhub-ensemble'">
+            <div v-if="current_models.includes(item)">
+             
               <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index%10]}"></span>
             </div>
             <div  v-else>
@@ -61,6 +63,9 @@
       <client-only>
         <vue-plotly :data="plot_data" :layout="plot_layout" :style="plot_style"></vue-plotly>
       </client-only> 
+      <p style="text-align:center"> 
+      <small >Note: You can navigate to forecasts from previous weeks with the left and right arrow keys</small>
+      </p>
     </div>
     </div>
   </div>
@@ -100,9 +105,12 @@ export default {
       return this.$store.getters.intervals
     },
     models(){
-      return this.$store.getters.models
-      },
-      forecasts(){
+    return this.$store.getters.models
+    },
+    current_models(){
+    return this.$store.getters.current_models
+    },
+    forecasts(){
       return this.$store.getters.forecasts
       },
     plot_data () {
