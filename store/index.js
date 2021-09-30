@@ -11,7 +11,7 @@ export const state = () => ({
     target_var: "case",
     locations: locations,
     intervals: ["0%","50%","95%"],
-    interval:"50%",
+    interval:"95%",
     location: "US",
     available_as_ofs: available_as_ofs,
     as_of_date: available_as_ofs.case[available_as_ofs.case.length - 1],
@@ -19,8 +19,8 @@ export const state = () => ({
     current_date: available_as_ofs.case[available_as_ofs.case.length - 1],
     current_truth: current_truth,
     forecasts: forecasts,
-    models: models,
-    current_models:  ['COVIDhub-ensemble'],
+    models: models.sort(),
+    current_models:  ['COVIDhub-ensemble','Karlen-pypm', 'UMass-MechBayes'],
     models_to_add: Object.keys(forecasts).slice(1,),
     interval_level: 95,
     data:['Current Truth','Truth As Of'],
@@ -91,6 +91,21 @@ export const mutations = {
         let index = state.data.indexOf(item)
         state.data.splice(index,1)
     },  
+    shuffle_colours (state) {
+        state.colours = state.colours.sort((a, b) => 0.5 - Math.random())
+    },  
+    select_all_models(state){
+        state.current_models = state.models
+    },
+    unselect_all_models(state){
+        state.current_models = ['COVIDhub-ensemble','Karlen-pypm', 'UMass-MechBayes']
+    },
+    select_ensemble(state){
+        state.current_models = ['COVIDhub-ensemble']
+    },
+    unselect_ensemble(state){
+        state.current_models = []
+    }
 }
 
 export const actions = {
@@ -172,7 +187,33 @@ export const getters = {
           }
     },
     plot_data: (state, getters) => {
-        var pd = Object.keys(state.forecasts).map(
+        var pd=[]
+        if(state.data.includes('Current Truth')){
+            pd.push({
+                x: state.current_truth.date,
+                y: state.current_truth.y,
+                type: "scatter",
+                mode: "lines",
+                name: "Current Truth",
+                marker: {
+                    color: "darkgray"
+                }
+            })
+        }
+            if ( state.data.includes('Truth As Of')) {
+                pd.push({
+                    x: state.as_of_truth.date,
+                    y: state.as_of_truth.y,
+                    type: "scatter",
+                    mode: "lines",
+                    opacity: 0.5,
+                    name: "Truth as of " + state.as_of_date,
+                    marker: {
+                        color: "black"
+                    }
+                })
+            }
+        var pd1 = Object.keys(state.forecasts).map(
             (model) => {
         
                 if (state.current_models.includes(model))
@@ -186,20 +227,21 @@ export const getters = {
                     return [
                         {
                             // point forecast
-                            x: model_forecasts["target_end_date"],
-                            y: model_forecasts["q0.5"],
+                            x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
+                            y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
                             type: "scatter",
                             name: model,
+                            opacity: 0.7,
                             line: {color: state.colours[index%10]},
                         },
                         {
                             // interval forecast -- currently fixed at 50%
                             x: [].concat(
-                                model_forecasts["target_end_date"],
-                                model_forecasts["target_end_date"].slice().reverse()),
+                                state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
+                                state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]).slice().reverse()),
                             y: [].concat(
-                                model_forecasts[lower_quantile],
-                                model_forecasts[upper_quantile].slice().reverse()),
+                                state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile]),
+                                state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile]).slice().reverse()),
                             fill: "toself",
                             fillcolor: state.colours[index%10],
                             opacity: 0.3,
@@ -215,23 +257,26 @@ export const getters = {
                 else if (state.interval == "95%"){
                     lower_quantile = "q0.025"
                     upper_quantile = "q0.975"
+                    console.log()
                     return [
                         {
                             // point forecast
-                            x: model_forecasts["target_end_date"],
-                            y: model_forecasts["q0.5"],
+                            x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
+                            y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
                             type: "scatter",
                             name: model,
+                            opacity: 0.7,
                             line: {color: state.colours[index%10]},
                         },
                         {
+                            
                             // interval forecast -- currently fixed at 50%
                             x: [].concat(
-                                model_forecasts["target_end_date"],
-                                model_forecasts["target_end_date"].slice().reverse()),
+                                state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
+                                state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]).slice().reverse()),
                             y: [].concat(
-                                model_forecasts[lower_quantile],
-                                model_forecasts[upper_quantile].slice().reverse()),
+                                state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile]),
+                                state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile]).slice().reverse()),
                             fill: "toself",
                             fillcolor: state.colours[index%10],
                             opacity: 0.3,
@@ -247,10 +292,11 @@ export const getters = {
                 else{
                     return{
                         // point forecast
-                        x: model_forecasts["target_end_date"],
-                        y: model_forecasts["q0.5"],
+                        x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
+                        y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
                         type: "scatter",
                         name: model,
+                        opacity: 0.7,
                         line: {color: state.colours[index%10]}
                     }
                 }
@@ -262,32 +308,9 @@ export const getters = {
                 
             }
         )
-        pd = [].concat(...pd)
+        pd = pd.concat(...pd1)
         console.log(pd)
-        if(state.data.includes('Current Truth')){
-        pd.push({
-            x: state.current_truth.date,
-            y: state.current_truth.y,
-            type: "scatter",
-            mode: "lines",
-            name: "Current Truth",
-            marker: {
-                color: "darkgray"
-            }
-        })
-    }
-        if (state.as_of_date != state.current_date && state.data.includes('Truth As Of')) {
-            pd.push({
-                x: state.as_of_truth.date,
-                y: state.as_of_truth.y,
-                type: "scatter",
-                mode: "lines",
-                name: "Truth as of " + state.as_of_date,
-                marker: {
-                    color: "black"
-                }
-            })
-        }
+        
 
         return pd
     }

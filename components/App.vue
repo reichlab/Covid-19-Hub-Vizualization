@@ -39,9 +39,9 @@
           <input type="checkbox" :id="item" :value="item" checked @click="handle_data(item,index)">&nbsp; {{item}}&nbsp;<span class="dot" style="background-color: black;"></span>
         </div>
       </div>
-      
-      <label for = "model">Select Models:</label>
-      <div style=" height: 150px; overflow-y: scroll;">
+      <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
+      <label for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
+      <div id="select_model" >
         <div class="form-group form-check" v-for="(item, index) in models" v-bind:key="index" >
           <div v-if="forecasts.hasOwnProperty(item)">
             <div v-if="current_models.includes(item)">
@@ -60,6 +60,9 @@
     </div>
     
     <div id="viz" class="col-md-9">
+      <p class="disclaimer" > 
+        <b>Most forecasts have failed to reliably predict rapid changes in the trends of reported cases and hospitalizations. Due to this limitation, they should not be relied upon for decisions about the possibility or timing of rapid changes in trends.</b>
+      </p>
       <client-only>
         <vue-plotly :data="plot_data" :layout="plot_layout" :style="plot_style"></vue-plotly>
       </client-only> 
@@ -83,13 +86,12 @@ export default {
   data() {
     return {
       data1:['Current Truth', 'Truth As Of'],
-      colours :['#0d0887', '#46039f', '#7201a8', '#9c179e', '#bd3786', '#d8576b', '#ed7953', '#fb9f3a', '#fdca26', '#f0f921'],
       selected_target_variable: 'case',
       selected_location: 'US',
       selected_interval:'95%',
       plot_style: {
         width: "100%",
-        height:"80vh"
+        height:"75vh"
       
       }
     }
@@ -118,6 +120,9 @@ export default {
     },
     plot_layout(){
       return this.$store.getters.plot_layout
+    },
+    colours(){
+      return this.$store.getters.colours
     }
     
   },
@@ -139,6 +144,9 @@ export default {
     handle_select_interval: function(val) {
       this.$store.commit('set_interval', val)
     },
+    shuffle_colours() {
+      this.$store.commit('shuffle_colours')
+    },
     handle_models(item,index) {
       var checkbox = document.getElementById(item);
       if (checkbox.checked != true)
@@ -149,6 +157,16 @@ export default {
          this.$store.commit('add_to_current_model', item)
       }
       
+    },
+    select_all_models(){
+      var checkbox = document.getElementById("all");
+      if (checkbox.checked === true)
+      {
+        this.$store.commit('select_all_models')
+      }
+      else{
+         this.$store.commit('unselect_all_models')
+      }
     },
     handle_data(item,index) {
       var checkbox = document.getElementById(item);
@@ -192,12 +210,23 @@ body,
   display: inline-block;
   
 }
-
+.disclaimer{
+  text-align:center; 
+  margin-left: 10%; 
+  margin-right: 10%; 
+  font-size: 12px
+}
 #vizualizations {
   
   padding: 1% 3%;
   border: none;
   
+}
+#select_model{
+  height: 180px; 
+  overflow-y: scroll; 
+  margin-top: 20px;
+  font-size:13px;
 }
 
 #options {
