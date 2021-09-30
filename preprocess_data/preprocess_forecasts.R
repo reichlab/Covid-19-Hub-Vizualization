@@ -47,10 +47,10 @@ locations <- covidData::fips_codes %>%
     dplyr::pull(location)
 
 # models in viz
-models <- covidHubUtils::get_model_designations(
+models <- covidHubUtils::get_model_metadata(
     source = "local_hub_repo",
     hub_repo_path = hub_repo_path) %>%
-    dplyr::filter(designation %in% c("primary", "secondary")) %>%
+    dplyr::filter(designation %in% c("primary", "secondary") | ensemble_of_hub_models==TRUE) %>%
     dplyr::pull(model)
 
 for (target_var in c("case", "death", "hosp")) {
