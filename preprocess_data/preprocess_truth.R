@@ -14,6 +14,17 @@ library(covidData)
 library(tidyverse)
 library(jsonlite)
 
+# flag to indicate whether we want to regenerate truth json files for all
+# past weeks, or only for the present week. There are two options:
+# - FALSE will regenerate all truth files for past weeks. This should only be
+# necessary if a change is made to the formatting of the files, or we need to
+# add in results for an older model that updated past forecasts
+# - TRUE will generate truth files only for the latest week. This will
+# be the appropriate option most of the time
+
+# generate_latest_only <- FALSE
+generate_latest_only <- TRUE
+
 last_as_of <- lubridate::floor_date(Sys.Date(), unit = "week", week_start = 6)
 
 available_as_ofs <- purrr::map(
@@ -49,6 +60,9 @@ writeLines(
 
 for (target_var in c("case", "death", "hosp")) {
     as_ofs <- available_as_ofs[[target_var]]
+    if (generate_latest_only) {
+        as_ofs <- max(as_ofs)
+    }
     if (target_var == "death") {
         data_start_date <- as.Date("2020-03-01")
     } else if (target_var == "case") {
