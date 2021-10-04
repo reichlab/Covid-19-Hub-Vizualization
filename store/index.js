@@ -20,7 +20,7 @@ export const state = () => ({
     current_truth: current_truth,
     forecasts: forecasts,
     models: models.sort(),
-    current_models:  ['COVIDhub-ensemble','Karlen-pypm', 'UMass-MechBayes'],
+    current_models:  ['COVIDhub-ensemble'],
     models_to_add: Object.keys(forecasts).slice(1,),
     interval_level: 95,
     data:['Current Truth','Truth As Of'],
@@ -98,7 +98,7 @@ export const mutations = {
         state.current_models = state.models
     },
     unselect_all_models(state){
-        state.current_models = ['COVIDhub-ensemble','Karlen-pypm', 'UMass-MechBayes']
+        state.current_models = ['COVIDhub-ensemble']
     },
     select_ensemble(state){
         state.current_models = ['COVIDhub-ensemble']
@@ -213,12 +213,36 @@ export const getters = {
                     }
                 })
             }
+            var pd0 = Object.keys(state.forecasts).map(
+                (model) => {
+                    if (state.current_models.includes(model))
+                    {
+                    let index = state.models.indexOf(model)
+                    let model_forecasts = state.forecasts[model]
+    
+            return ({
+                x: [state.as_of_truth.date.slice(-1)[0],model_forecasts["target_end_date"].slice(0)[0]],
+                    y: [state.as_of_truth.y.slice(-1)[0],model_forecasts["q0.5"].slice(0)[0]],
+                    mode: 'lines',
+                    type: "scatter",
+                    name: model,
+                    hovermode: false,
+                    opacity: 0.7,
+                    line: {color: state.colours[index%10]},
+                    
+            })
+        }else{
+            return []
+        }
+        })
+        pd = pd.concat(...pd0)
         var pd1 = Object.keys(state.forecasts).map(
             (model) => {
         
                 if (state.current_models.includes(model))
                 {
                 let index = state.models.indexOf(model)
+
                 let model_forecasts = state.forecasts[model]
                 let upper_quantile, lower_quantile
                 if (state.interval == "50%"){
@@ -227,8 +251,8 @@ export const getters = {
                     return [
                         {
                             // point forecast
-                            x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
-                            y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
+                            x: model_forecasts["target_end_date"],
+                            y:model_forecasts["q0.5"],
                             type: "scatter",
                             name: model,
                             opacity: 0.7,
@@ -261,8 +285,8 @@ export const getters = {
                     return [
                         {
                             // point forecast
-                            x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
-                            y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
+                            x: model_forecasts["target_end_date"],
+                            y:model_forecasts["q0.5"],
                             type: "scatter",
                             name: model,
                             opacity: 0.7,
@@ -292,8 +316,8 @@ export const getters = {
                 else{
                     return{
                         // point forecast
-                        x: state.as_of_truth.date.slice(-1).concat(model_forecasts["target_end_date"]),
-                        y:state.as_of_truth.y.slice(-1).concat(model_forecasts["q0.5"]),
+                        x: model_forecasts["target_end_date"],
+                        y:model_forecasts["q0.5"],
                         type: "scatter",
                         name: model,
                         opacity: 0.7,

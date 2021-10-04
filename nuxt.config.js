@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'fcv',
+    title: 'COVID-19 Forecast Hub Vizualisation',
     htmlAttrs: {
       lang: 'en'
     },
