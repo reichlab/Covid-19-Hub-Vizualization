@@ -19,7 +19,7 @@ export const state = () => ({
     current_date: available_as_ofs.case[available_as_ofs.case.length - 1],
     current_truth: current_truth,
     forecasts: forecasts,
-    models: models.sort(),
+    models: models,
     current_models:  ['COVIDhub-ensemble'],
     models_to_add: Object.keys(forecasts).slice(1,),
     interval_level: 95,
@@ -44,8 +44,7 @@ export const mutations = {
         
     },
     set_interval (state, new_interval) {
-        state.interval = new_interval
-        
+        state.interval = new_interval    
     },
     increment_as_of (state) {
         let as_of_index = state.available_as_ofs[state.target_var].indexOf(state.as_of_date)
@@ -98,14 +97,9 @@ export const mutations = {
         state.current_models = state.models
     },
     unselect_all_models(state){
-        state.current_models = ['COVIDhub-ensemble']
-    },
-    select_ensemble(state){
-        state.current_models = ['COVIDhub-ensemble']
-    },
-    unselect_ensemble(state){
         state.current_models = []
-    }
+    },
+    
 }
 
 export const actions = {

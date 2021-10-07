@@ -215,3 +215,4 @@ models <- c(
     models[!(models %in% c("COVIDhub-ensemble", "COVIDhub-baseline"))]
 )
 writeLines(jsonlite::toJSON(models), "static/data/models.json")
+
