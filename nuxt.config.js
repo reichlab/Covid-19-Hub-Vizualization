@@ -19,9 +19,6 @@ export default {
     ],
       script: [
         { src: 'https://www.statcounter.com/counter/counter.js', async: true , body: true},
-      ],
-      noscript:[
-        
       ]
   },
 

@@ -134,7 +134,23 @@
   
 <!-- End of Statcounter Code -->
 </template>
-
+<!-- Default Statcounter code for Covid19-forecast-hub
+https://viz.covid19forecasthub.org -->
+<script type="text/javascript">
+var sc_project=12239903; 
+var sc_invisible=1; 
+var sc_security="3c7ad044"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics
+Made Easy - Statcounter" href="https://statcounter.com/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/12239903/0/3c7ad044/1/"
+alt="Web Analytics Made Easy - Statcounter"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
 <script>
 // import { Plotly } from 'vue-plotly'
 // import embed from vega-embed
