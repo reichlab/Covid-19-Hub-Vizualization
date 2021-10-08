@@ -1,1 +1,1 @@
-[{"value":"death","text":"Deaths","plot_text": "Incident weekly deaths"},{"value":"case","text":"Cases","plot_text":"Incident weekly cases"},  {"value":"hosp","text":"Hospitalizations","plot_text":"Incident daily hospitalizations"}]
+[{"value":"death","text":"Deaths","plot_text": "Incident weekly deaths"},{"value":"hosp","text":"Hospitalizations","plot_text":"Incident daily hospitalizations"},{"value":"case","text":"Cases","plot_text":"Incident weekly cases"}]
