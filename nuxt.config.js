@@ -16,7 +16,13 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+      script: [
+        { src: 'https://www.statcounter.com/counter/counter.js', async: true , body: true},
+      ],
+      noscript:[
+        
+      ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
