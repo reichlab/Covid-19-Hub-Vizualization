@@ -1,5 +1,4 @@
 <template>
-
   <div id="app">
    <header id="masthead" class="site-header outer">
    <div class="inner">
@@ -15,6 +14,16 @@
                   <li class="menu-item current">
                      <a class="" href="https://covid19forecasthub.org">
                      Home
+                     </a>
+                  </li>
+                   <li class="menu-item">
+                     <a class="" href="https://covid-19-hub-vizualization.netlify.app/">
+                     Visualization
+                     </a>
+                  </li>
+                   <li class="menu-item">
+                     <a class="" href="https://covid19forecasthub.org/doc/reports/">
+                     Reports
                      </a>
                   </li>
                   <li class="menu-item">
@@ -51,7 +60,7 @@
     <div id="options" class="col-md-3">
       <form > 
         <div class="row var" >
-        <label for = "target_variable" class="col-md-5">Target Variable:</label>
+        <label for = "target_variable" class="col-md-5">Outcome:</label>
         <b-form-select name = "target_variable"
                        v-model="selected_target_variable"
                        :options="target_variables"
@@ -79,34 +88,30 @@
         </div>
       </form>
 
-      <label for = "data">Select Data:</label>
-      <div class="form-group form-check ">
-      
-          <input type="checkbox" :id="data1[0]" :value="data1[0]" checked @click="handle_data(data1[0],0)" >&nbsp; {{data1[0]}}&nbsp;<span class="dot" style="background-color: lightgrey; "></span>&nbsp;&nbsp;&nbsp;
-        
-       
-          <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; {{data1[1]}}&nbsp;<span class="dot" style="background-color: black;"></span>
-        
+      <label for = "data">Select Truth Data:</label>
+      <div class="form-group form-check select_data ">
+          <input type="checkbox" :id="data1[0]" :value="data1[0]" checked @click="handle_data(data1[0],0)" >&nbsp; Current ({{current_truth}}) &nbsp;<span class="dot" style="background-color: lightgrey; "></span>&nbsp;&nbsp;&nbsp;
+          <br>
+          <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; As Of {{truth_as_of}}&nbsp;<span class="dot" style="background-color: black;"></span>
       </div>
-     
       <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
       <label class="label" for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
-      <div id="select_model" >
-        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index" >
+      <div id="select_model" v-bind:key="current_models">
+        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
           <div v-if="forecasts.hasOwnProperty(item)">
             <div v-if="current_models.includes(item)">
-              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index%10]}"></span>
+              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
             </div>
             <div  v-else>
-              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" >&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index%10]}"></span>
+              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" >&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
             </div>
           </div>
           <div v-else style="margin:0, padding:0">
           </div>
         </div>
-        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index" >
+        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
           <div v-if="!forecasts.hasOwnProperty(item)" style="color: lightgrey">
-            <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index%10]}"></span>
+            <input type="checkbox" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
           </div>
         </div>
       </div>
@@ -126,6 +131,8 @@
     </div>
   </div>
   </div>
+  
+<!-- End of Statcounter Code -->
 </template>
 
 <script>
@@ -158,6 +165,12 @@ export default {
     },
     intervals () {
       return this.$store.getters.intervals
+    },
+    current_truth(){
+      return this.$store.getters.current_truth
+    },
+    truth_as_of(){
+      return this.$store.getters.truth_as_of
     },
     models(){
     return this.$store.getters.models
@@ -205,6 +218,7 @@ export default {
       if (checkbox.checked != true)
       {
         this.$store.commit('remove_from_current_model', item)
+
       }
       else{
          this.$store.commit('add_to_current_model', item)
@@ -216,10 +230,13 @@ export default {
       if (checkbox.checked === true)
       {
         this.$store.commit('select_all_models')
+       
       }
       else{
          this.$store.commit('unselect_all_models')
+         
       }
+      this.$forceUpdate()
     },
     handle_data(item,index) {
       var checkbox = document.getElementById(item);
@@ -265,12 +282,15 @@ body,
 }
 .disclaimer{
   text-align:center; 
-  margin-left: 10%; 
-  margin-right: 10%; 
+  margin-left: 3%; 
+  margin-right: 3%; 
   font-size: 12px
 }
 .var{
   margin-bottom: 10px;
+}
+.select_data{
+  font-size: 14px;
 }
 #vizualizations {
   
@@ -294,6 +314,12 @@ body,
   padding: 5px;
   
 }
+select{
+  font-size: 14px !important;
+}
+label{
+  font-size: 15.5px;
+}
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -310,6 +336,7 @@ body,
   background: grey; 
   border-radius: 5px;
 }
+
 </style>
 
 <style lang="scss" scoped>
@@ -484,6 +511,9 @@ padding-right: 1.25em;
 }
 .site-navigation {
   margin-left: auto;
+  a:hover {
+  text-decoration: none;
+}
 }
 .menu,
 .submenu {
