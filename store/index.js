@@ -8,21 +8,21 @@ import axios from 'axios';
 import target_variables from '~/assets/target_variables.json';
 import locations from '~/assets/locations.json';
 import available_as_ofs from '~/static/data/available_as_ofs.json';
-import current_truth from '~/static/data/truth/case_US_2021-10-02.json';
-import forecasts from '~/static/data/forecasts/case_US_2021-10-02.json';
+import current_truth from '~/static/data/truth/death_US_2021-10-02.json';
+import forecasts from '~/static/data/forecasts/death_US_2021-10-02.json';
 import models from '~/static/data/models.json';
 
 export const state = () => ({
   target_variables,
-  target_var: 'case',
+  target_var: 'death',
   locations,
   intervals: ['0%', '50%', '95%'],
   interval: '95%',
   location: 'US',
   available_as_ofs,
-  as_of_date: available_as_ofs.case[available_as_ofs.case.length - 1],
+  as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
   as_of_truth: current_truth,
-  current_date: available_as_ofs.case[available_as_ofs.case.length - 1],
+  current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
   current_truth,
   forecasts,
   models,
@@ -200,7 +200,7 @@ export const getters = {
             name: model,
             hovermode: false,
             opacity: 0.7,
-            line: { color: state.colours[index % 10] },
+            line: { color: state.colours[index] },
             hoverinfo:'none',    
           });
         }
@@ -212,7 +212,8 @@ export const getters = {
       (model) => {
         if (state.current_models.includes(model)) {
           const index = state.models.indexOf(model);
-
+          const is_hosp = state.target_var === 'hosp'
+          const mode = is_hosp? 'lines':'lines+markers'
           const model_forecasts = state.forecasts[model];
           let upper_quantile; let
             lower_quantile;
@@ -223,6 +224,7 @@ export const getters = {
             type: 'scatter',
             name: model,
             opacity: 0.7,
+            mode: mode,
             line: { color: state.colours[index] },
           };
           if (state.interval === '50%') {

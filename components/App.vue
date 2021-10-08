@@ -92,7 +92,7 @@
       <div class="form-group form-check select_data ">
           <input type="checkbox" :id="data1[0]" :value="data1[0]" checked @click="handle_data(data1[0],0)" >&nbsp; Current ({{current_truth}}) &nbsp;<span class="dot" style="background-color: lightgrey; "></span>&nbsp;&nbsp;&nbsp;
           <br>
-          <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; As Of {{truth_as_of}}&nbsp;<span class="dot" style="background-color: black;"></span>
+          <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; As of {{truth_as_of}}&nbsp;<span class="dot" style="background-color: black;"></span>
       </div>
       <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
       <label class="label" for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
@@ -100,10 +100,10 @@
         <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
           <div v-if="forecasts.hasOwnProperty(item)">
             <div v-if="current_models.includes(item)">
-              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
+              <label><input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
             </div>
             <div  v-else>
-              <input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" >&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
+              <label><input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" >&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
             </div>
           </div>
           <div v-else style="margin:0, padding:0">
@@ -111,7 +111,7 @@
         </div>
         <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
           <div v-if="!forecasts.hasOwnProperty(item)" style="color: lightgrey">
-            <input type="checkbox" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span>
+            <label><input type="checkbox" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default {
   data() {
     return {
       data1:['Current Truth', 'Truth As Of'],
-      selected_target_variable: 'case',
+      selected_target_variable: 'death',
       selected_location: 'US',
       selected_interval:'95%',
       plot_style: {
