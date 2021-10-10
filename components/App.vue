@@ -97,7 +97,7 @@
       <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
       <label class="label" for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
       <div id="select_model" v-bind:key="current_models">
-        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
+        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index" >
           <div v-if="forecasts.hasOwnProperty(item)">
             <div v-if="current_models.includes(item)">
               <label><input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
@@ -109,7 +109,7 @@
           <div v-else style="margin:0, padding:0">
           </div>
         </div>
-        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="item" >
+        <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index+100" >
           <div v-if="!forecasts.hasOwnProperty(item)" style="color: lightgrey">
             <label><input type="checkbox" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
           </div>
@@ -132,19 +132,14 @@
   </div>
   </div>
   
-<!-- End of Statcounter Code -->
+
 </template>
-<!-- Default Statcounter code for Covid19-forecast-hub
-https://viz.covid19forecasthub.org -->
-<script type="text/javascript">
-var sc_project=12239903; 
-var sc_invisible=1; 
-var sc_security="3c7ad044"; 
+<script src="../../assets/analytics.js">
 </script>
-<script type="text/javascript"
-src="https://www.statcounter.com/counter/counter.js"
-async></script>
-<!-- End of Statcounter Code -->
+
+
+
+
 <script>
 // import { Plotly } from 'vue-plotly'
 // import embed from vega-embed

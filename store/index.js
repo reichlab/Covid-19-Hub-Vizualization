@@ -11,7 +11,7 @@ import available_as_ofs from '~/static/data/available_as_ofs.json';
 import current_truth from '~/static/data/truth/death_US_2021-10-02.json';
 import forecasts from '~/static/data/forecasts/death_US_2021-10-02.json';
 import models from '~/static/data/models.json';
-
+import moment from "moment"
 export const state = () => ({
   target_variables,
   target_var: 'death',
@@ -22,7 +22,7 @@ export const state = () => ({
   available_as_ofs,
   as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
   as_of_truth: current_truth,
-  current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
+  current_date: available_as_ofs.death[available_as_ofs.case.length - 1],
   current_truth,
   forecasts,
   models,
@@ -161,6 +161,7 @@ export const getters = {
   },
   plot_data: (state) => {
     let pd = [];
+    
     if (state.data.includes('Current Truth')) {
       pd.push({
         x: state.current_truth.date,
@@ -191,10 +192,24 @@ export const getters = {
         if (state.current_models.includes(model)) {
           const index = state.models.indexOf(model);
           const model_forecasts = state.forecasts[model];
-
+          let forecast_start_x
+          let forecast_start_y
+          
+          if (moment(model_forecasts.target_end_date.slice(-1)[0]).isAfter(model_forecasts.target_end_date.slice(0)[0])){
+             forecast_start_x = model_forecasts.target_end_date.slice(0)[0]
+             forecast_start_y = model_forecasts['q0.5'].slice(0)[0]
+          }
+          else{
+            forecast_start_x = model_forecasts.target_end_date.slice(-1)[0]
+             forecast_start_y = model_forecasts['q0.5'].slice(-1)[0]
+          }
+          const x = [state.as_of_truth.date.slice(-1)[0],forecast_start_x]
+          const y =[state.as_of_truth.y.slice(-1)[0], forecast_start_y]
+          console.log(x,y)
           return ({
-            x: [state.as_of_truth.date.slice(-1)[0], model_forecasts.target_end_date.slice(0)[0]],
-            y: [state.as_of_truth.y.slice(-1)[0], model_forecasts['q0.5'].slice(0)[0]],
+            x: [state.as_of_truth.date.slice(-1)[0],forecast_start_x],
+            y: [state.as_of_truth.y.slice(-1)[0], forecast_start_y],
+           
             mode: 'lines',
             type: 'scatter',
             name: model,
@@ -215,6 +230,7 @@ export const getters = {
           const is_hosp = state.target_var === 'hosp'
           const mode = is_hosp? 'lines':'lines+markers'
           const model_forecasts = state.forecasts[model];
+          let bool = moment(model_forecasts.target_end_date.slice(-1)[0]).isAfter(model_forecasts.target_end_date.slice(0)[0])
           let upper_quantile; let
             lower_quantile;
           const plot_line = {
@@ -230,17 +246,28 @@ export const getters = {
           if (state.interval === '50%') {
             lower_quantile = 'q0.25';
             upper_quantile = 'q0.75';
+            let x,y1,y2
+            if (bool === true){
+                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
+                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile])
+                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile])
+            }
+            else{
+                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date.slice().reverse())
+                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile].slice().reverse())
+                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile].slice().reverse())
+            }
             return [
               plot_line,
               {
                 // interval forecast -- currently fixed at 50%
                 x: [].concat(
-                  state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date),
-                  state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date).slice().reverse(),
+                  x,
+                  x.slice().reverse(),
                 ),
                 y: [].concat(
-                  state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile]),
-                  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile]).slice().reverse(),
+                  y1,
+                  y2.slice().reverse(),
                 ),
                 fill: 'toself',
                 fillcolor: state.colours[index],
@@ -250,26 +277,35 @@ export const getters = {
                 name: model,
                 showlegend: false,
                 hoverinfo: 'skip',
-
               },
             ];
           }
           if (state.interval === '95%') {
             lower_quantile = 'q0.025';
             upper_quantile = 'q0.975';
-
+            let x,y1,y2
+            if (bool === true){
+                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
+                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile])
+                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile])
+            }
+            else{
+                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date.slice().reverse())
+                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile].slice().reverse())
+                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile].slice().reverse())
+            }
             return [
               plot_line,
               {
 
                 // interval forecast -- currently fixed at 50%
                 x: [].concat(
-                  state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date),
-                  state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date).slice().reverse(),
+                  x,
+                  x.slice().reverse(),
                 ),
                 y: [].concat(
-                  state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile]),
-                  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile]).slice().reverse(),
+                  y1,
+                  y2.slice().reverse(),
                 ),
                 fill: 'toself',
                 fillcolor: state.colours[index],
