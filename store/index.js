@@ -246,43 +246,14 @@ export const getters = {
           if (state.interval === '50%') {
             lower_quantile = 'q0.25';
             upper_quantile = 'q0.75';
-            let x,y1,y2
-            if (bool === true){
-                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
-                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile])
-                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile])
-            }
-            else{
-                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date.slice().reverse())
-                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile].slice().reverse())
-                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile].slice().reverse())
-            }
-            return [
-              plot_line,
-              {
-                // interval forecast -- currently fixed at 50%
-                x: [].concat(
-                  x,
-                  x.slice().reverse(),
-                ),
-                y: [].concat(
-                  y1,
-                  y2.slice().reverse(),
-                ),
-                fill: 'toself',
-                fillcolor: state.colours[index],
-                opacity: 0.3,
-                line: { color: 'transparent' },
-                type: 'scatter',
-                name: model,
-                showlegend: false,
-                hoverinfo: 'skip',
-              },
-            ];
           }
-          if (state.interval === '95%') {
+          else if (state.interval === '95%') {
             lower_quantile = 'q0.025';
             upper_quantile = 'q0.975';
+          }
+          else{
+            return [plot_line]
+          }
             let x,y1,y2
             if (bool === true){
                 x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
@@ -297,7 +268,6 @@ export const getters = {
             return [
               plot_line,
               {
-
                 // interval forecast -- currently fixed at 50%
                 x: [].concat(
                   x,
@@ -315,11 +285,8 @@ export const getters = {
                 name: model,
                 showlegend: false,
                 hoverinfo: 'skip',
-
               },
-            ];
-          }
-          return plot_line;
+            ]; 
         }
         return [];
       },
