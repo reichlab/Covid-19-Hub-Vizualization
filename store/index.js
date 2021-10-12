@@ -8,8 +8,8 @@ import axios from 'axios';
 import target_variables from '~/assets/target_variables.json';
 import locations from '~/assets/locations.json';
 import available_as_ofs from '~/static/data/available_as_ofs.json';
-import current_truth from '~/static/data/truth/death_US_2021-10-02.json';
-import forecasts from '~/static/data/forecasts/death_US_2021-10-02.json';
+import current_truth from '~/static/data/truth/death_US_2021-10-09.json';
+import forecasts from '~/static/data/forecasts/death_US_2021-10-09.json';
 import models from '~/static/data/models.json';
 import moment from "moment"
 export const state = () => ({
