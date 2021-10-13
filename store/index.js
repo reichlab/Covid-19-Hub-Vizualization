@@ -8,10 +8,9 @@ import axios from 'axios';
 import target_variables from '~/assets/target_variables.json';
 import locations from '~/assets/locations.json';
 import available_as_ofs from '~/static/data/available_as_ofs.json';
-import current_truth from '~/static/data/truth/death_US_2021-10-09.json';
-import forecasts from '~/static/data/forecasts/death_US_2021-10-09.json';
 import models from '~/static/data/models.json';
 import moment from "moment"
+
 export const state = () => ({
   target_variables,
   target_var: 'death',
@@ -21,10 +20,10 @@ export const state = () => ({
   location: 'US',
   available_as_ofs,
   as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
-  as_of_truth: current_truth,
+  as_of_truth: [],
   current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
-  current_truth,
-  forecasts,
+  current_truth: [],
+  forecasts: {},
   models,
   current_models: ['COVIDhub-ensemble'],
   data: ['Current Truth', 'Truth As Of'],
@@ -100,12 +99,28 @@ export const mutations = {
 
 };
 
+// helper function to load data
+// if process.server is true, we're doing a server side build,
+// so load from a local json file
+// otherwise, issue an http request
+async function fetch_data(target_path) {
+  var data;
+  if (process.server) {
+    target_path = 'static/' + target_path;
+    data = JSON.parse(require('fs').readFileSync(target_path, 'utf8'));
+  } else {
+    const response = await axios.get(target_path);
+    data = response.data;
+  }
+  return data;
+}
+
 export const actions = {
   async fetch_current_truth({ commit, state }) {
     try {
       const target_path = `data/truth/${state.target_var}_${state.location}_${state.current_date}.json`;
-      const response = await axios.get(target_path);
-      commit('set_current_truth', response.data);
+      const data = await fetch_data(target_path);
+      commit('set_current_truth', data);
     } catch (error) {
       commit('set_current_truth', []);
       console.log(error);
@@ -114,8 +129,8 @@ export const actions = {
   async fetch_as_of_truth({ commit, state }) {
     try {
       const target_path = `data/truth/${state.target_var}_${state.location}_${state.as_of_date}.json`;
-      const response = await axios.get(target_path);
-      commit('set_as_of_truth', response.data);
+      const data = await fetch_data(target_path);
+      commit('set_as_of_truth', data);
     } catch (error) {
       commit('set_as_of_truth', []);
       console.log(error);
@@ -124,13 +139,18 @@ export const actions = {
   async fetch_forecasts({ commit, state }) {
     try {
       const target_path = `data/forecasts/${state.target_var}_${state.location}_${state.as_of_date}.json`;
-      const response = await axios.get(target_path);
-      commit('set_forecasts', response.data);
+      const data = await fetch_data(target_path);
+      commit('set_forecasts', data);
     } catch (error) {
       commit('set_forecasts', {});
       console.log(error);
     }
   },
+  async nuxtServerInit({ dispatch }, context) {
+    await dispatch('fetch_current_truth', context);
+    await dispatch('fetch_as_of_truth', context);
+    await dispatch('fetch_forecasts', context);
+  }
 };
 
 export const getters = {
