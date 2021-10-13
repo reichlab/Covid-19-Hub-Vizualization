@@ -22,7 +22,7 @@ export const state = () => ({
   available_as_ofs,
   as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
   as_of_truth: current_truth,
-  current_date: available_as_ofs.death[available_as_ofs.case.length - 1],
+  current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
   current_truth,
   forecasts,
   models,
