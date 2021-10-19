@@ -89,9 +89,7 @@ export const mutations = {
     state.colours = state.colours.sort(() => 0.5 - Math.random());
   },
   select_all_models(state) {
-    state.current_models = Object.keys(state.forecasts).map(
-      (model) => model,
-    );
+    state.current_models = state.models
   },
   unselect_all_models(state) {
     state.current_models = ['COVIDhub-ensemble'];

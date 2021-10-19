@@ -97,7 +97,7 @@ export default {
       selected_interval:'95%',
       plot_style: {
         width: "100%",
-        height:"70vh"
+        height:"72vh"
       
       }
     }
@@ -248,7 +248,7 @@ html,body{
   
 }
 #select_model{
-  height: 370px; 
+  height: 48vh; 
   overflow-y: scroll; 
   margin-top: 20px;
   font-size: 14px;

@@ -16,7 +16,7 @@
                      </a>
                   </li>
                    <li class="menu-item">
-                     <a class="" href="https://covid-19-hub-vizualization.netlify.app/">
+                     <a class="" href="https://viz.covid19forecasthub.org">
                      Visualization
                      </a>
                   </li>
@@ -501,3 +501,9 @@ padding-right: 1.25em;
 }
 
 </style>
+
+<script>
+   export default{
+
+   }
+</script>
