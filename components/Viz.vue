@@ -39,15 +39,18 @@
           <br>
           <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; As of {{truth_as_of}}&nbsp;<span class="dot" style="background-color: black;"></span>
       </div>
+
+      {{current_models}}     
       <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
       <label class="label" for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
+      <div v-bind:key="forecasts">
       <div id="select_model" v-bind:key="current_models">
         <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index" >
-          <div v-if="forecasts.hasOwnProperty(item)">
-            <div v-if="current_models.includes(item)">
+          <div v-if="forecasts.hasOwnProperty(item)" v-bind:key="forecasts">
+            <div v-if="current_models.includes(item)" v-bind:key="current_models">
               <label><input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" checked>&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
             </div>
-            <div  v-else>
+            <div  v-else v-bind:key="current_models">
               <label><input type="checkbox" :id="item" :value="item" @click="handle_models(item,index)" >&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
             </div>
           </div>
@@ -59,6 +62,7 @@
             <label><input type="checkbox" disabled="disabled">&nbsp; {{item}}&nbsp;<span class="dot" v-bind:style="{ backgroundColor: colours[index]}"></span></label>
           </div>
         </div>
+      </div>
       </div>
     </div>
     
@@ -135,6 +139,9 @@ export default {
     },
     colours(){
       return this.$store.getters.colours
+    },
+    all_models(){
+      return this.$store.getters.all_models
     }
     
   },
@@ -149,9 +156,19 @@ export default {
     },
     handle_select_target_variable: function(val) {
       this.$store.commit('set_target_var', val)
+      console.log(this.all_models)
+      console.log("HI")
+      if(this.all_models){
+        
+        this.$store.commit('select_all_models')
+      }
     },
     handle_select_location: function(val) {
       this.$store.commit('set_location', val)
+      console.log("HI")
+      if(this.all_models){
+        this.$store.commit('select_all_models')
+      }
     },
     handle_select_interval: function(val) {
       this.$store.commit('set_interval', val)

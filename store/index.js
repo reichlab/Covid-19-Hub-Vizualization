@@ -14,6 +14,7 @@ import moment from "moment"
 export const state = () => ({
   target_variables,
   target_var: 'death',
+  all_models: false,
   locations,
   intervals: ['0%', '50%', '95%'],
   interval: '95%',
@@ -31,17 +32,23 @@ export const state = () => ({
 });
 
 export const mutations = {
-  set_target_var(state, new_target_var) {
+  async set_target_var(state, new_target_var) {
     state.target_var = new_target_var;
-    this.dispatch('fetch_current_truth');
-    this.dispatch('fetch_as_of_truth');
-    this.dispatch('fetch_forecasts');
+    await this.dispatch('fetch_current_truth');
+    await this.dispatch('fetch_as_of_truth');
+    await this.dispatch('fetch_forecasts')
+    console.log("Hello!")
+    console.log(state.all_models, state.forecasts)
+    await this.dispatch('update_models')
+    update_models
   },
-  set_location(state, new_location) {
+  async set_location(state, new_location) {
     state.location = new_location;
-    this.dispatch('fetch_current_truth');
-    this.dispatch('fetch_as_of_truth');
-    this.dispatch('fetch_forecasts');
+    await this.dispatch('fetch_current_truth');
+    await this.dispatch('fetch_as_of_truth');
+    await this.dispatch('fetch_forecasts');
+    await this.dispatch('update_models')
+    
   },
   set_interval(state, new_interval) {
     state.interval = new_interval;
@@ -71,6 +78,7 @@ export const mutations = {
   set_forecasts(state, new_forecasts) {
     state.forecasts = new_forecasts;
   },
+  
   remove_from_current_model(state, item) {
     const index = state.current_models.indexOf(item);
     state.current_models.splice(index, 1);
@@ -89,10 +97,14 @@ export const mutations = {
     state.colours = state.colours.sort(() => 0.5 - Math.random());
   },
   select_all_models(state) {
-    state.current_models = state.models
+    state.current_models = Object.keys(state.forecasts).map((model)=>{
+      return model
+    })
+    state.all_models = true
   },
   unselect_all_models(state) {
     state.current_models = ['COVIDhub-ensemble'];
+    state.all_models = false
   },
 
 };
@@ -144,6 +156,9 @@ export const actions = {
       console.log(error);
     }
   },
+  async update_models({commit, state}){
+    commit('select_all_models')
+  },
   async nuxtServerInit({ dispatch }, context) {
     await dispatch('fetch_current_truth', context);
     await dispatch('fetch_as_of_truth', context);
@@ -162,6 +177,7 @@ export const getters = {
   forecasts: (state) => state.forecasts,
   current_truth: (state) => state.current_date,
   truth_as_of: (state) => state.as_of_date,
+  all_models: (state) => state.all_models,
   plot_layout: (state) => {
     const variable = target_variables.filter((obj) => obj.value === state.target_var)[0].plot_text;
     const location = locations.filter((obj) => obj.value === state.location)[0].text;
