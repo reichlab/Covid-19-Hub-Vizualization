@@ -16,7 +16,18 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+    script: [
+      { src: '/analytics.js' },
+      { src: 'https://secure.statcounter.com/counter/counter.js', async: true }
+    ],
+    noscript: [
+      {
+        innerHTML: '<div class="statcounter"><a title="web stats" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/12239903/0/3c7ad044/1/" alt="web stats" referrerPolicy="no-referrer-when-downgrade"></a></div>',
+        body: true
+      }
+    ],
+    __dangerouslyDisableSanitizers: ['noscript']
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
