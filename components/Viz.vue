@@ -39,11 +39,9 @@
           <br>
           <input type="checkbox" :id="data1[1]" :value="data1[1]" checked @click="handle_data(data1[1],1)">&nbsp; As of {{truth_as_of}}&nbsp;<span class="dot" style="background-color: black;"></span>
       </div>
-
-      {{current_models}}     
-      <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
+      <button type="button" class="btn xwwbtn-outline-dark btn-sm rounded-pill" style="float: right;" @click="shuffle_colours()">Shuffle Colours</button>
       <label class="label" for = "model">Select Models:</label> <input type="checkbox" id="all" :value="1" @click="select_all_models()" >
-      <div v-bind:key="forecasts">
+      
       <div id="select_model" v-bind:key="current_models">
         <div class="form-group form-check" style="min-height:0px; margin-bottom: 5px" v-for="(item, index) in models" v-bind:key="index" >
           <div v-if="forecasts.hasOwnProperty(item)" v-bind:key="forecasts">
@@ -63,7 +61,7 @@
           </div>
         </div>
       </div>
-      </div>
+    
     </div>
     
     <div id="viz" class="col-md-9">
