@@ -37,17 +37,19 @@ export const mutations = {
     await this.dispatch('fetch_current_truth');
     await this.dispatch('fetch_as_of_truth');
     await this.dispatch('fetch_forecasts')
-    console.log("Hello!")
-    console.log(state.all_models, state.forecasts)
-    await this.dispatch('update_models')
-    update_models
+    if (state.all_models === true){
+      await this.dispatch('update_models')
+    }
+    
   },
   async set_location(state, new_location) {
     state.location = new_location;
     await this.dispatch('fetch_current_truth');
     await this.dispatch('fetch_as_of_truth');
     await this.dispatch('fetch_forecasts');
-    await this.dispatch('update_models')
+    if (state.all_models === true){
+      await this.dispatch('update_models')
+    }
     
   },
   set_interval(state, new_interval) {
