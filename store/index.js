@@ -108,7 +108,7 @@ export const mutations = {
     state.current_models = ['COVIDhub-ensemble'];
     state.all_models = false
   },
-
+  
 };
 
 // helper function to load data
@@ -169,6 +169,7 @@ export const actions = {
 };
 
 export const getters = {
+
   target_variables: (state) => state.target_variables,
   locations: (state) => state.locations,
   intervals: (state) => state.intervals,
@@ -227,24 +228,41 @@ export const getters = {
       (model) => {
         if (state.current_models.includes(model)) {
           const index = state.models.indexOf(model);
-          const model_forecasts = state.forecasts[model];
-          let forecast_start_x
-          let forecast_start_y
+            var model_forecasts = state.forecasts[model]
+            var date = model_forecasts["target_end_date"]
+            var lq1 = model_forecasts["q0.025"]
+            var lq2 = model_forecasts["q0.25"]
+            var mid = model_forecasts["q0.5"]
+            var uq1 = model_forecasts["q0.75"]
+            var uq2 = model_forecasts["q0.975"]
+            
+            //1) combine the arrays:
+            var list = [];
+            for (var j = 0; j < date.length; j++) 
+                list.push({'date': date[j],'lq1': lq1[j],'lq2': lq2[j],'uq1': uq1[j],'uq2': uq2[j],'mid': mid[j] });
+            //2) sort:
+            
+            list.sort(function(a, b) {
+                return ((moment(a.date).isBefore(b.date)) ? -1  : 1);
+                //Sort could be modified to, for example, sort on the age 
+                // if the name is the same.
+            });
           
-          if (moment(model_forecasts.target_end_date.slice(-1)[0]).isAfter(model_forecasts.target_end_date.slice(0)[0])){
-             forecast_start_x = model_forecasts.target_end_date.slice(0)[0]
-             forecast_start_y = model_forecasts['q0.5'].slice(0)[0]
-          }
-          else{
-            forecast_start_x = model_forecasts.target_end_date.slice(-1)[0]
-             forecast_start_y = model_forecasts['q0.5'].slice(-1)[0]
-          }
-          const x = [state.as_of_truth.date.slice(-1)[0],forecast_start_x]
-          const y =[state.as_of_truth.y.slice(-1)[0], forecast_start_y]
-          console.log(x,y)
+            //3) separate them back out:
+            for (var k = 0; k < list.length; k++) {
+                model_forecasts.target_end_date[k] = list[k].date;
+                model_forecasts["q0.025"][k] = list[k].lq1;
+                model_forecasts["q0.25"][k] = list[k].lq2;
+                model_forecasts["q0.5"][k] = list[k].mid;
+                model_forecasts["q0.75"][k] = list[k].uq1;
+                model_forecasts["q0.975"][k] = list[k].uq2;
+            }
+          
+          
+        
           return ({
-            x: [state.as_of_truth.date.slice(-1)[0],forecast_start_x],
-            y: [state.as_of_truth.y.slice(-1)[0], forecast_start_y],
+            x: [state.as_of_truth.date.slice(-1)[0],model_forecasts.target_end_date.slice(0)[0]],
+            y: [state.as_of_truth.y.slice(-1)[0], model_forecasts['q0.5'].slice(0)[0]],
            
             mode: 'lines',
             type: 'scatter',
@@ -266,9 +284,8 @@ export const getters = {
           const is_hosp = state.target_var === 'hosp'
           const mode = is_hosp? 'lines':'lines+markers'
           const model_forecasts = state.forecasts[model];
-          let bool = moment(model_forecasts.target_end_date.slice(-1)[0]).isAfter(model_forecasts.target_end_date.slice(0)[0])
-          let upper_quantile; let
-            lower_quantile;
+          let upper_quantile; 
+          let lower_quantile;
           const plot_line = {
             // point forecast
             x: model_forecasts.target_end_date,
@@ -290,17 +307,11 @@ export const getters = {
           else{
             return [plot_line]
           }
-            let x,y1,y2
-            if (bool === true){
-                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
-                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile])
-                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile])
-            }
-            else{
-                x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date.slice().reverse())
-                y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile].slice().reverse())
-                y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile].slice().reverse())
-            }
+           
+                var x = state.as_of_truth.date.slice(-1).concat(model_forecasts.target_end_date)
+                var y1 = state.as_of_truth.y.slice(-1).concat(model_forecasts[lower_quantile])
+                var y2 =  state.as_of_truth.y.slice(-1).concat(model_forecasts[upper_quantile])
+        
             return [
               plot_line,
               {
