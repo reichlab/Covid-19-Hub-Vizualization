@@ -1,0 +1,100 @@
+name: (Active) Update truth and foreceast data weekly
+on:
+  workflow_dispatch:
+    inputs: 
+      skip_viz_upload:
+        description: 'true/false indicating whether to skip Viz upload'
+        required: false
+        default: 'false'
+  schedule:
+    - cron: '0 16 * * 0'
+
+jobs:
+  upload_viz:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.2]
+
+    steps:
+    - name: Free disk space
+      run: |
+          df --human-readable
+          sudo apt clean
+          docker rmi $(docker image ls --all --quiet)
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@v4
+      with:
+        root-reserve-mb: 4096
+        swap-size-mb: 4096
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        
+    - name: Check space available
+      run: df --human-readable
+
+    - name: Checkout covid-19-hub-vizualization repo
+      uses: actions/checkout@v2
+      with:
+        path: Covid-19-Hub-Vizualization
+
+    - name: Checkout covid19-forecast-hub repo
+      uses: actions/checkout@v2
+      
+      with:
+        repository: reichlab/covid19-forecast-hub
+        token: ${{secrets.GH_TOKEN}}
+        path: covid19-forecast-hub
+  
+        
+    - name: Setup GitHub Action for R language
+      uses: r-lib/actions/setup-r@v1
+
+    - name: Install system dependencies
+      run: sudo apt-get install libudunits2-dev libcurl4-openssl-dev libgdal-dev
+      
+    - name: Checkout covidData
+      uses: actions/checkout@v2
+      with:
+        repository: reichlab/covidData
+        token: ${{secrets.GH_TOKEN}}
+        path: covidData
+        
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+    
+    - name: Install python dependencies 
+      run: pip3 install -r visualization/requirements.txt
+      working-directory: ./covid19-forecast-hub
+      
+    - name: Install R dependencies (for covidData + covidHubUtils)
+      working-directory: ./covid19-forecast-hub
+      run: Rscript code/R_scripts/install_dependencies.R
+      env:
+        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+    
+    - name: Install covidData
+      run: make all
+      working-directory: ./covidData/code/data-processing
+      
+    - name: Generate truth data 
+      run: Rscript ./Covid-19-Hub-Vizualization/preprocess_data/preprocess_truth.R
+    
+    - name: Generate forecast data 
+      run: Rscript ./Covid-19-Hub-Vizualization/preprocess_data/preprocess_forecasts.R
+      
+      
+    - name: Push generated files to GitHub
+      run: bash ./travis/push-gh.sh
+      working-directory: ./Covid-19-Hub-Vizualization
+      env:
+        GH_TOKEN: ${{secrets.GH_TOKEN}}
+        
+    - name: Check space available after update
+      run: df --human-readable
