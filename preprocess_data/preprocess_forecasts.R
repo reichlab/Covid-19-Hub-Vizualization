@@ -127,7 +127,7 @@ for (target_var in c("case", "death", "hosp")) {
 
         for (location in unique(all_forecasts$location)) {
             target_filename <- paste0(
-                "/static/data/forecasts/",
+                "static/data/forecasts/",
                 target_var, "_", location, "_", as_of,  ".json")
 
             location_forecasts <- all_forecasts %>%
@@ -197,7 +197,7 @@ for (target_var in c("case", "death", "hosp")) {
     as_ofs <- available_as_ofs[[target_var]]
     for (as_of in as.character(as_ofs)) {
         for (location in locations) {
-            file_path <- paste0("/static/data/forecasts/",
+            file_path <- paste0("static/data/forecasts/",
                 target_var, "_",
                 location, "_",
                 as_of,  ".json")
@@ -214,5 +214,5 @@ models <- c(
     c("COVIDhub-ensemble", "COVIDhub-baseline"),
     models[!(models %in% c("COVIDhub-ensemble", "COVIDhub-baseline"))]
 )
-writeLines(jsonlite::toJSON(models), "/static/data/models.json")
+writeLines(jsonlite::toJSON(models), "static/data/models.json")
 

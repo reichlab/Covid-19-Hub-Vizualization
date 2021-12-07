@@ -45,7 +45,7 @@ names(available_as_ofs) <- c("case", "death", "hosp")
 available_as_ofs_json <- jsonlite::toJSON(available_as_ofs)
 writeLines(
     available_as_ofs_json,
-    paste0("/static/data/available_as_ofs.json")
+    paste0("static/data/available_as_ofs.json")
 )
 
 locations_json <- covidData::fips_codes %>%
@@ -90,7 +90,7 @@ for (target_var in c("case", "death", "hosp")) {
 
             writeLines(
                 location_data,
-                paste0("/static/data/truth/", target_var, "_", location, "_", as_of,  ".json")
+                paste0("static/data/truth/", target_var, "_", location, "_", as_of,  ".json")
             )
         }
     }
