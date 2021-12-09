@@ -41,7 +41,7 @@
                      </a>
                   </li>
                   <li class="menu-item menu-button">
-                     <a class="button" href="https://github.com/reichlab/covid19-forecast-hub" target="_blank" rel="noopener">GitHub</a>          
+                     <a class="button" href="https://github.com/reichlab/Covid-19-Hub-Vizualization" target="_blank" rel="noopener">GitHub</a>          
                   </li>
                </ul>
             </div>
