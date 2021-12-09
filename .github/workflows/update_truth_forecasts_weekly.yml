@@ -7,7 +7,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    - cron: '0 16 * * 0'
+    - cron: '0 18 * * TUE'
 
 jobs:
   upload_viz:
@@ -84,10 +84,12 @@ jobs:
       working-directory: ./covidData/code/data-processing
       
     - name: Generate truth data 
-      run: Rscript ./Covid-19-Hub-Vizualization/preprocess_data/preprocess_truth.R
+      run: Rscript /preprocess_data/preprocess_truth.R
+      working-directory: ./Covid-19-Hub-Vizualization
     
     - name: Generate forecast data 
-      run: Rscript ./Covid-19-Hub-Vizualization/preprocess_data/preprocess_forecasts.R
+      run: Rscript /preprocess_data/preprocess_forecasts.R
+      working-directory: ./Covid-19-Hub-Vizualization
       
       
     - name: Push generated files to GitHub
