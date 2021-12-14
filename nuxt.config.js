@@ -1,3 +1,9 @@
+import axios from 'axios';
+import target_variables from './assets/target_variables.json';
+import locations from './assets/locations.json';
+import available_as_ofs from './static/data/available_as_ofs.json';
+import models from './static/data/models.json';
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -37,7 +43,6 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src: '@/plugins/vue-plotly', mode: 'client' }
-    // '~plugins/vuevega.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -51,7 +56,23 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    'bootstrap-vue/nuxt'
+    'bootstrap-vue/nuxt',
+    ['nuxt-forecast-viz',
+      {
+        target_variables: target_variables,
+        init_target_var: 'death',
+        locations: locations,
+        init_location: 'US',
+        intervals: ['0%', '50%', '95%'],
+        init_interval: '95%',
+        available_as_ofs: available_as_ofs,
+        init_as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
+        current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
+        models: models,
+        default_models: ['COVIDhub-ensemble'],
+        all_models: false
+      }
+    ]
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -64,5 +85,9 @@ export default {
         fs: 'empty'
       };
     }
+  },
+
+  generate: {
+    cache: false
   }
 }

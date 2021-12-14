@@ -1,6 +1,6 @@
 <template>
     <header id="masthead" class="site-header outer">
-   <div class="inner">
+    <div class="inner">
       <div class="site-header-inside">
          <div class="site-branding">
             <p class="site-logo"><a href="https://covid19forecasthub.org"><img src="https://covid19forecasthub.org/images/forecast-hub-logo_DARKBLUE.png" alt="Viz - COVID-19 Forecast Hub"/></a></p>
