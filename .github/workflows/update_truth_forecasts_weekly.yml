@@ -83,7 +83,7 @@ jobs:
       run: make all
       working-directory: ./covidData/code/data-processing
     
-     - name: Check directory 
+    - name: Check directory 
       run: pwd
       working-directory: ./Covid-19-Hub-Vizualization
 
