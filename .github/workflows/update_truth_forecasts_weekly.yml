@@ -88,15 +88,19 @@ jobs:
 
     - name: Generate truth data 
       run: Rscript /preprocess_data/preprocess_truth.R
+      working-directory: /Covid-19-Hub-Vizualization
       
     
     - name: Generate forecast data 
       run: Rscript /preprocess_data/preprocess_forecasts.R
+      working-directory: /Covid-19-Hub-Vizualization
       
     - name: Push generated files to GitHub
       run: bash ./travis/push-gh.sh
       env:
         GH_TOKEN: ${{secrets.GH_TOKEN}}
+      working-directory: /Covid-19-Hub-Vizualization
         
     - name: Check space available after update
       run: df --human-readable
+      working-directory: /Covid-19-Hub-Vizualization
