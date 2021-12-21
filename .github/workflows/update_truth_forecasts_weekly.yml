@@ -85,20 +85,20 @@ jobs:
     
     - name: Check directory 
       run: pwd
-      working-directory: ./Covid-19-Hub-Vizualization
+      working-directory: /home/runner/work/Covid-19-Hub-Vizualization
 
     - name: Generate truth data 
       run: Rscript /preprocess_data/preprocess_truth.R
-      working-directory: ./Covid-19-Hub-Vizualization
+      working-directory: /home/runner/work/Covid-19-Hub-Vizualization
     
     - name: Generate forecast data 
       run: Rscript /preprocess_data/preprocess_forecasts.R
-      working-directory: ./Covid-19-Hub-Vizualization
+      working-directory: /home/runner/work/Covid-19-Hub-Vizualization
       
       
     - name: Push generated files to GitHub
       run: bash ./travis/push-gh.sh
-      working-directory: ./Covid-19-Hub-Vizualization
+      working-directory: /home/runner/work/Covid-19-Hub-Vizualization
       env:
         GH_TOKEN: ${{secrets.GH_TOKEN}}
         
