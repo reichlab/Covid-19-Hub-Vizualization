@@ -83,8 +83,11 @@ jobs:
       run: make all
       working-directory: ./covidData/code/data-processing
     
-    - name: Check directory 
-      run: ls
+    - name: Install R dependencies 
+      working-directory: ./Covid-19-Hub-Vizualization
+      run: Rscript install_dependencies.R
+      env:
+        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
 
     - name: Generate truth data 
       run: Rscript preprocess_data/preprocess_truth.R
