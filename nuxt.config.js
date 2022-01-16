@@ -70,7 +70,8 @@ export default {
         current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
         models: models,
         default_models: ['COVIDhub-ensemble'],
-        all_models: false
+        all_models: false,
+        disclaimer: 'Most forecasts have failed to reliably predict rapid changes in the trends of reported cases and hospitalizations. Due to this limitation, they should not be relied upon for decisions about the possibility or timing of rapid changes in trends.'
       }
     ]
   ],
