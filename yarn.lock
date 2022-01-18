@@ -8464,9 +8464,8 @@ numeric@^1.2.6:
   resolved "https://registry.yarnpkg.com/numeric/-/numeric-1.2.6.tgz#765b02bef97988fcf880d4eb3f36b80fa31335aa"
   integrity sha1-dlsCvvl5iPz4gNTrPza4D6MTNao=
 
-"nuxt-forecast-viz@https://github.com/reichlab/nuxt-forecast-viz":
+"nuxt-forecast-viz@file:/Users/vrushtimody/Desktop/nuxt-forecast-viz":
   version "1.0.0"
-  resolved "https://github.com/reichlab/nuxt-forecast-viz#6eb785f535e42ed882c0200e824d90ee88b92942"
 
 nuxt@^2.15.7:
   version "2.15.8"

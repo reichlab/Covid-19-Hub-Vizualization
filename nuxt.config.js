@@ -60,7 +60,7 @@ export default {
     ['nuxt-forecast-viz',
       {
         target_variables: target_variables,
-        init_target_var: 'death',
+        target_var: 'death',
         locations: locations,
         init_location: 'US',
         intervals: ['0%', '50%', '95%'],
