@@ -110,34 +110,41 @@ for (target_var in c("case", "death", "hosp")) {
         as_ofs <- max(as_ofs)
     }
     for (as_of in as.character(as_ofs)) {
-        #  forecasts <- covidHubUtils:: load_forecasts(
-        #     models =models , 
-        #     forecast_dates = as.Date(as_of) + 2, 
-        #     locations = locations, 
-        #     types= NULL,
-        #     targets=targets, 
-        #     source"local_hub_repo", 
-        #     hub_repo_path=hub_repo_path, 
-        #     as_of=NULL, 
-        #     verbose = TRUE, 
-        #     hub"US"
-        #     )
-        # all_forecasts <- covidHubUtils:: align_forecasts(forecasts)
-        all_forecasts <- covidEnsembles::load_covid_forecasts_relative_horizon(
-            hub = "US",
-            source = "local_hub_repo",
-            hub_repo_path = hub_repo_path,
-            data_processed_subpath = "data-processed/",
-            monday_dates = as.Date(as_of) + 2,
-            as_of = NULL,
-            model_abbrs = models,
-            timezero_window_size = 6,
-            locations = locations,
-            targets = targets,
-            max_horizon = max_horizon,
-            required_quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
-        )
+        forecasts <- covidHubUtils::load_forecasts(
+           models = models, 
+           dates = as.Date(as_of) + 2, 
+           date_window_size = 6,
+           locations = locations, 
+           types = "quantile",
+           targets = targets, 
+           source = "local_hub_repo", 
+           hub_repo_path = hub_repo_path, 
+           as_of = NULL, 
+           verbose = FALSE, 
+           hub = "US"
+           ) 
+        all_forecasts <- covidHubUtils::align_forecasts(forecasts) %>% 
+           dplyr::filter(
+            relative_horizon <= max_horizon,
+            format(quantile, digits = 3, nsmall = 3) %in%
+            format(c(0.025, 0.25, 0.5, 0.75, 0.975), digits = 3, nsmall = 3)
+            )
 
+        # # Leaving old loading step for reference
+        # all_forecasts <- covidEnsembles::load_covid_forecasts_relative_horizon(
+        #     hub = "US",
+        #     source = "local_hub_repo",
+        #     hub_repo_path = hub_repo_path,
+        #     data_processed_subpath = "data-processed/",
+        #     monday_dates = as.Date(as_of) + 2,
+        #     as_of = NULL,
+        #     model_abbrs = models,
+        #     timezero_window_size = 6,
+        #     locations = locations,
+        #     targets = targets,
+        #     max_horizon = max_horizon,
+        #     required_quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
+        # )
 
         for (location in unique(all_forecasts$location)) {
             target_filename <- paste0(
