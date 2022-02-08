@@ -8,14 +8,14 @@ setup_git() {
 commit_website_files() {
   echo "Commiting files..."
   git add .
-  git commit --message "[skip ci] Github Actions build: $GITHUB_RUN_NUMBER"
+  git commit --message "[skip ci] Github Actions build"
 }
 
 upload_files() {
   echo "Uploading files..."
   git fetch
-  git pull --rebase https://${GH_TOKEN}@github.com/reichlab/covid19-forecast-hub.git
-  git push https://${GH_TOKEN}@github.com/reichlab/covid19-forecast-hub.git HEAD:master
+  git pull --rebase https://${GH_TOKEN}@github.com/reichlab/Covid-19-Hub-Vizualization.git
+  git push https://${GH_TOKEN}@github.com/reichlab/Covid-19-Hub-Vizualization.git HEAD:master
   echo "pushed to github"
 }
 
