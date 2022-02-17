@@ -8,7 +8,7 @@ setup_git() {
 commit_website_files() {
   echo "Commiting files..."
   git add .
-  git commit --message "[skip ci] Github Actions build"
+  git commit --message "Github Actions build"
 }
 
 upload_files() {
