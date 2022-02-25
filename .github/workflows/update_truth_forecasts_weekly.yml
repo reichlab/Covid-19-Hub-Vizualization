@@ -7,7 +7,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    - cron: '0 18 * * TUE'
+    - cron: '0 11 * * TUE'
 
 jobs:
   upload_viz:
