@@ -55,22 +55,16 @@ jobs:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
     
-    - name: Install R dependencies (for covidData + covidHubUtils)
-      working-directory: ./covid19-forecast-hub
-      run: Rscript code/R_scripts/install_dependencies.R
-      env:
-        GITHUB_PAT: ${{ secrets.GH_TOKEN }}
-    
-    - name: Install covidData
-      run: make all
-      working-directory: ./covidData/code/data-processing
-    
     - name: Install R dependencies 
       working-directory: ./Covid-19-Hub-Vizualization
       run: Rscript install_dependencies.R
       env:
         GITHUB_PAT: ${{ secrets.GH_TOKEN }}
 
+    - name: Install covidData
+      run: make all
+      working-directory: ./covidData/code/data-processing
+    
     - name: Generate truth data 
       run: Rscript preprocess_data/preprocess_truth.R
       working-directory: ./Covid-19-Hub-Vizualization
