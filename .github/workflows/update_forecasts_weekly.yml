@@ -7,7 +7,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    - cron: '0 11 * * TUE'
+    - cron: '0 15 * * 2,3'
 
 jobs:
   upload_viz:
@@ -88,6 +88,11 @@ jobs:
       run: Rscript install_dependencies.R
       env:
         GITHUB_PAT: ${{ secrets.GH_TOKEN }}
+
+    - name: Generate truth data 
+      run: Rscript preprocess_data/preprocess_truth.R
+      working-directory: ./Covid-19-Hub-Vizualization
+      
     
     - name: Generate forecast data 
       run: Rscript preprocess_data/preprocess_forecasts.R
