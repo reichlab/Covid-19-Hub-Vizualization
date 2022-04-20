@@ -3,6 +3,17 @@ import target_variables from './assets/target_variables.json';
 import locations from './assets/locations.json';
 import available_as_ofs from './static/data/available_as_ofs.json';
 import models from './static/data/models.json';
+import moment from 'moment';
+
+let date = available_as_ofs.death[available_as_ofs.death.length - 1]
+while(true){
+  try {
+    let fileName = require(`./static/data/forecasts/case_01_${date}`);
+    break
+  } catch (e) {
+    date = moment(date).subtract(1, 'days').format('YYYY-MM-DD')
+  }  
+}
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
@@ -66,7 +77,7 @@ export default {
         intervals: ['0%', '50%', '95%'],
         init_interval: '95%',
         available_as_ofs: available_as_ofs,
-        init_as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
+        init_as_of_date: date,
         current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
         models: models,
         default_models: ['COVIDhub-ensemble'],
