@@ -8466,7 +8466,7 @@ numeric@^1.2.6:
 
 "nuxt-forecast-viz@https://github.com/reichlab/nuxt-forecast-viz":
   version "1.0.0"
-  resolved "https://github.com/reichlab/nuxt-forecast-viz#093c4a71015d62b9aeeaca3923a90e8574c28563"
+  resolved "https://github.com/reichlab/nuxt-forecast-viz#ee3bb87f26045f886a670ebec7f22066ffade67e"
 
 nuxt@^2.15.7:
   version "2.15.8"
