@@ -5,6 +5,17 @@ import locations from '../assets/locations.json';
 import available_as_ofs from '../static/data/available_as_ofs.json';
 import models from '../static/data/models.json';
 
+let date = available_as_ofs.death[available_as_ofs.death.length - 1]
+while(true){
+  try {
+    let fileName = require(`../static/data/forecasts/case_01_${date}`);
+    break
+  } catch (e) {
+    date = moment(date).subtract(1, 'days').format('YYYY-MM-DD')
+  }  
+}
+
+
 export const actions = {
   // fetch data by reading from a json file
   // if process.server is True, we're doing a server-side render,
@@ -37,8 +48,8 @@ export const actions = {
         intervals: ['0%', '50%', '95%'],
         init_interval: '95%',
         available_as_ofs: available_as_ofs,
-        init_as_of_date: available_as_ofs.death[available_as_ofs.death.length - 1],
-        current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
+        init_as_of_date: date,
+        current_date: date,
         models: models,
         default_models: ['COVIDhub-ensemble'],
         all_models: false,
