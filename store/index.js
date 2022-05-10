@@ -1,4 +1,5 @@
 // store/index.js
+import moment from 'moment';
 import axios from 'axios';
 import target_variables from '../assets/target_variables.json';
 import locations from '../assets/locations.json';
@@ -49,7 +50,7 @@ export const actions = {
         init_interval: '95%',
         available_as_ofs: available_as_ofs,
         init_as_of_date: date,
-        current_date: date,
+        current_date: available_as_ofs.death[available_as_ofs.death.length - 1],
         models: models,
         default_models: ['COVIDhub-ensemble'],
         all_models: false,
