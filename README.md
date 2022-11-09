@@ -4,15 +4,15 @@ This repo is a fork of https://github.com/reichlab/Covid-19-Hub-Vizualization to
 a https://github.com/reichlab/predtimechart/ -based https://viz.covid19forecasthub.org/ site. This fork does not contain
 any nuxt- or vue-related files.
 
-# predtimechar
+# predtimechart
 
-This fork temporarily includes in-development `predtimechart.css` and `predtimechart.js` files, which index.html
+This fork temporarily includes in-development `predtimechart.css` and `predtimechart.js` files, which `index.html`
 directly loads, rather than through the jsdelivr CDN.
 
 # netlify
 
 This fork is linked to https://www.netlify.com/ so that pushes to `master` will initiate a deployment. The production
-site is xx (we have not set up a custom domain for this fork).
+site is https://covid19-viz-predtimechart.netlify.app/ (we have not set up a custom domain for this fork).
 
 # updating forecast and truth JSON files
 
