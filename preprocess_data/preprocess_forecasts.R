@@ -207,7 +207,8 @@ for (target_var in c("case", "death", "hosp")) {
     }
 }
 
-# get list of all models
+# get list of all models and the initial as of date
+initial_as_of <- as.character(min(available_as_ofs[["death"]]))
 models <- NULL
 for (target_var in c("case", "death", "hosp")) {
     # locations in viz -- should really be target specific, but here we
@@ -225,15 +226,21 @@ for (target_var in c("case", "death", "hosp")) {
             if (file.exists(file_path)) {
                 forecasts <- jsonlite::fromJSON(readLines(file_path))
                 models <- unique(c(models, names(forecasts)))
+                if (target_var == "death") {
+                    initial_as_of <- max(initial_as_of, as_of)
+                }
             }
         }
     }
 }
-# sort, and put COVIDhub-ensemble and COVIDhub-baseline at the beginning
+# sort models and put COVIDhub-ensemble and COVIDhub-baseline at the beginning
 models <- sort(models)
 models <- c(
     c("COVIDhub-ensemble", "COVIDhub-baseline"),
     models[!(models %in% c("COVIDhub-ensemble", "COVIDhub-baseline"))]
 )
 writeLines(jsonlite::toJSON(models), "static/data/models.json")
+
+writeLines(jsonlite::toJSON(list(initial_as_of = initial_as_of), auto_unbox = TRUE),
+           "static/data/initial_as_of.json")
 
