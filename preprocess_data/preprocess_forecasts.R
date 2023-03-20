@@ -47,19 +47,20 @@ hub_repo_path <- "../covid19-forecast-hub"
 
 # as of dates included in viz. These are Saturdays to match with truth dates,
 # but we'll actually pull forecasts dated up through the following Monday
-last_as_of <- lubridate::floor_date(Sys.Date(), unit = "week", week_start = 6)
-
 available_as_ofs <- purrr::map(
     c("case", "death", "hosp"),
     function(target_var) {
         if (target_var == "death") {
             first_as_of <- as.Date("2020-04-11")
+            last_as_of <- as.Date("2023-03-04")
             data_start_date <- as.Date("2020-03-01")
         } else if (target_var == "case") {
             first_as_of <- as.Date("2020-08-01")
+            last_as_of <- as.Date("2023-03-04")
             data_start_date <- as.Date("2020-03-01")
-        } else {
+        } else { # hosp
             first_as_of <- as.Date("2020-12-05")
+            last_as_of <- lubridate::floor_date(Sys.Date(), unit = "week", week_start = 6)
             data_start_date <- as.Date("2020-10-01")
         }
         as_ofs <- seq.Date(from = first_as_of, to = last_as_of, by = 7)
@@ -208,7 +209,7 @@ for (target_var in c("case", "death", "hosp")) {
 }
 
 # get list of all models and the initial as of date
-initial_as_of <- as.character(min(available_as_ofs[["death"]]))
+initial_as_of <- as.character(min(available_as_ofs[["hosp"]]))
 models <- NULL
 for (target_var in c("case", "death", "hosp")) {
     # locations in viz -- should really be target specific, but here we
@@ -226,7 +227,7 @@ for (target_var in c("case", "death", "hosp")) {
             if (file.exists(file_path)) {
                 forecasts <- jsonlite::fromJSON(readLines(file_path))
                 models <- unique(c(models, names(forecasts)))
-                if (target_var == "death") {
+                if (target_var == "hosp") {
                     initial_as_of <- max(initial_as_of, as_of)
                 }
             }
