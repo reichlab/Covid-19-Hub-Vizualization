@@ -13,14 +13,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
-    <!-- predtimechart -->
-    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/reichlab/predtimechart@1.1.7/predtimechart.css">
-
-    <!-- https://www.daterangepicker.com/ requirement for predtimechart -->
+    <!-- https://www.daterangepicker.com/ -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+    <!-- predtimechart -->
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
 
     <!-- this page's styles -->
     <link rel="stylesheet" href="/styles.css">
@@ -71,12 +70,13 @@
     </div>
 
     <script type="module">
-        import App from 'https://cdn.jsdelivr.net/gh/reichlab/predtimechart@1.1.7/predtimechart.js';
+        import App from 'https://cdn.jsdelivr.net/gh/reichlab/predtimechart@2.0.0/dist/predtimechart.bundle.js';
 
         document.predtimechart = App;  // for debugging
 
         // _fetchData()
-        function _fetchData(isForecast, targetKey, unitAbbrev, referenceDate) {
+        function _fetchData(isForecast, targetKey, taskIDs, referenceDate) {
+            const unitAbbrev = taskIDs['location'];  // see note below re: only one task ID ('location')
             let target_path;
             if (isForecast) {
                 target_path = `./static/data/forecasts/${targetKey}_${unitAbbrev}_${referenceDate}.json`;
@@ -120,13 +120,14 @@
                 })
         ];
 
-        // initialize the viz component
+        // initialize the viz component. Recall that taskIDs is an object with keys for each task ID and corresponding
+        // values. For this project, there is always only one task ID: 'location', e.g., {"location": "48"}
         Promise.all(promises).then((values) => {
             const options = {
                 'target_variables': targetVariables,
                 'initial_target_var': 'hosp',
-                'units': locations,
-                'initial_unit': 'US',
+                'task_ids': {'location': locations},
+                'initial_task_ids': {'location': 'US'},
                 'intervals': ['0%', '50%', '95%'],
                 'initial_interval': '95%',
                 'available_as_ofs': availableAsOfs,
@@ -134,7 +135,8 @@
                 'current_date': availableAsOfs.death[availableAsOfs.death.length - 1],
                 'models': models,
                 'initial_checked_models': ['COVIDhub-ensemble'],
-                'disclaimer': 'Most forecasts have failed to reliably predict rapid changes in the trends of reported cases and hospitalizations. Due to this limitation, they should not be relied upon for decisions about the possibility or timing of rapid changes in trends. Ensemble case forecasts were discontinued as of February 20, 2023 and death forecasts were discontinued as of March 6, 2023.'
+                'disclaimer': 'Most forecasts have failed to reliably predict rapid changes in the trends of reported cases and hospitalizations. Due to this limitation, they should not be relied upon for decisions about the possibility or timing of rapid changes in trends. Ensemble case forecasts were discontinued as of February 20, 2023 and death forecasts were discontinued as of March 6, 2023.',
+                "initial_xaxis_range": null,
             }
 
             // componentDiv, _fetchData, isIndicateRedraw, options:
