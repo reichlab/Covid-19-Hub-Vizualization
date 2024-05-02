@@ -6,8 +6,6 @@ on:
         description: 'true/false indicating whether to skip Viz upload'
         required: false
         default: 'false'
-  schedule:
-    - cron: '30 13 * * 2,3'
 
 jobs:
   upload_viz:
